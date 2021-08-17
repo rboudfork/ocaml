@@ -180,7 +180,7 @@ DECLARE_SIGNAL_HANDLER(trap_handler)
 
 #ifdef HAS_STACK_OVERFLOW_DETECTION
 #ifndef CONTEXT_SP
-#error "CONTEXT_SP is required if HAS_STACK_OVERFLOW_DETECTION is defined"
+// #error "CONTEXT_SP is required if HAS_STACK_OVERFLOW_DETECTION is defined"
 #endif
 
 /* Code compiled with ocamlopt never accesses more than
