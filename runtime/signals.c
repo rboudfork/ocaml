@@ -540,7 +540,13 @@ CAMLprim value caml_sys_rev_convert_signal_number(value signo)
 
 void * caml_init_signal_stack(void)
 {
-#ifdef POSIX_SIGNALS
+#if defined(__EMSCRIPTEN__)
+  /* wasm has no POSIX signal delivery and sigaltstack is non-functional.
+     Stack overflow is trapped directly by the wasm engine, so no alternate
+     signal stack is needed.  Return a small heap block as a non-NULL sentinel
+     (freed by caml_free_signal_stack) so domain creation succeeds. */
+  return malloc(1);
+#elif defined(POSIX_SIGNALS)
   stack_t stk;
   stk.ss_flags = 0;
   stk.ss_size = SIGSTKSZ;
@@ -576,7 +582,9 @@ void * caml_init_signal_stack(void)
 
 void caml_free_signal_stack(void * signal_stack)
 {
-#ifdef POSIX_SIGNALS
+#if defined(__EMSCRIPTEN__)
+  free(signal_stack);
+#elif defined(POSIX_SIGNALS)
   stack_t stk, disable;
   disable.ss_flags = SS_DISABLE;
   disable.ss_sp = NULL;  /* not required but avoids a valgrind false alarm */

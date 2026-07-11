@@ -465,7 +465,33 @@ void caml_init_os_params(void)
   return;
 }
 
-#ifndef __CYGWIN__
+#if defined(__EMSCRIPTEN__)
+
+/* wasm/emscripten has no real virtual memory: mmap only allocates from the
+   linear-memory heap and MAP_FIXED cannot overlay an existing reservation.
+   OCaml's reserve(PROT_NONE)-then-commit(MAP_FIXED) dance therefore fails.
+   Map committed R/W memory directly and make commit/decommit no-ops. */
+
+void *caml_plat_mem_map(uintnat size, int reserve_only)
+{
+  void* mem;
+  (void)reserve_only;
+
+  mem = mmap(0, size, PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  if (mem == MAP_FAILED)
+    return 0;
+
+  return mem;
+}
+
+static void* map_fixed(void* mem, uintnat size, int prot)
+{
+  (void)size; (void)prot;
+  return mem;  /* already committed by caml_plat_mem_map */
+}
+
+#elif !defined(__CYGWIN__)
 
 void *caml_plat_mem_map(uintnat size, int reserve_only)
 {
