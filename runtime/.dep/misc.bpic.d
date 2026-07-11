@@ -1,0 +1,4 @@
+misc.bpic.o: misc.c caml/config.h caml/m.h caml/s.h caml/misc.h \
+  caml/memory.h caml/gc.h caml/mlvalues.h caml/domain_state.h \
+  caml/domain_state.tbl caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/domain.h caml/osdeps.h caml/version.h

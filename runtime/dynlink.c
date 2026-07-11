@@ -187,9 +187,10 @@ void caml_build_primitive_table(char_os * lib_path,
   caml_parse_ld_conf();
   /* Open the shared libraries */
   caml_ext_table_init(&shared_libs, 8);
-  if (libs != NULL)
-    for (char_os *p = libs; *p != 0; p += strlen_os(p) + 1)
-      open_shared_lib(p);
+  // wasm: shared libraries are not supported, skip open_shared_lib
+  // if (libs != NULL)
+  //   for (char_os *p = libs; *p != 0; p += strlen_os(p) + 1)
+  //     open_shared_lib(p);
   /* Build the primitive table */
   caml_ext_table_init(&caml_prim_table, 0x180);
   caml_ext_table_init(&caml_prim_name_table, 0x180);
